@@ -60,7 +60,7 @@ router.delete('/deletenote/:id', fetchuser, async (req, res) => {
         if (note.user.toString() !== req.user.id){
             return res.status(401).send("Unauthorised Action");
         }
-        note = await Note.deleteOne({id : req.params.id});
+        note = await Note.deleteOne({_id : req.params.id});
         res.json({"success":"Your note has been deleted"})
     }
     catch (error) {
