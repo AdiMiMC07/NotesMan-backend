@@ -4,10 +4,11 @@ const { body, validationResult } = require('express-validator');
 const User = require('../model/User');
 const bcryptjs = require('bcryptjs');
 const jwToken = require('jsonwebtoken');
+require('dotenv').config();
 // const jwt_secret = "include<iostream>";
 const fetchuser = require('../middleware/fetchuser');
 const jwt_secret = process.env.JWT_SECRET;
-
+console.log(process.env.JWT_SECRET)
 // Route 1 : Creating create user endpoint :POST /api/auth/createuser : no login req
 router.post('/createuser', [body('name').isLength({ min: 1, max: 50 }), body('email').isEmail()], async (req, res) => {
   try {
