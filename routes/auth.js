@@ -4,22 +4,23 @@ const { body, validationResult } = require('express-validator');
 const User = require('../model/User');
 const bcryptjs = require('bcryptjs');
 const jwToken = require('jsonwebtoken');
-const jwt_secret = "include<iostream>";
+// const jwt_secret = "include<iostream>";
 const fetchuser = require('../middleware/fetchuser');
-// const jwt_secret = process.env.NODE_ENV_JWT_SECRET;
+const jwt_secret = process.env.JWT_SECRET;
 
 // Route 1 : Creating create user endpoint :POST /api/auth/createuser : no login req
 router.post('/createuser', [body('name').isLength({ min: 1, max: 50 }), body('email').isEmail()], async (req, res) => {
   try {
     // checking the req body data
+    let success = false;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      return res.status(400).json({ success:success,errors: errors.array() });
     }
     // finding a user with same email address
     let user = await User.findOne({ email: req.body.email });
     if (user) {
-      return res.status(400).json({ err: "Sorry this user already exists" });
+      return res.status(400).json({ success:success,err: "Sorry this user already exists" });
     }
     // creating user
     let salt = await bcryptjs.genSalt(10);
@@ -35,7 +36,7 @@ router.post('/createuser', [body('name').isLength({ min: 1, max: 50 }), body('em
       }
     }
     const authtoken = jwToken.sign(data, jwt_secret);
-    res.json(authtoken);
+    res.json({success:true,authtoken});
   }
   catch (error) {
     console.error(error.message, "Something went wrong");
@@ -74,7 +75,7 @@ router.post('/login', [body('email').isEmail(), body('password', 'Please enter t
   }
 });
 // Route 3 :Get user details : /api/auth/getuser : Login req
-router.post('/getuser',fetchuser,async (req,res)=>{
+router.get('/getuser',fetchuser,async (req,res)=>{
   try {
     let userid = req.user.id;
     const user = await User.findById(userid).select("-password");
