@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-const mongooseURI = "mongodb://localhost:27017/notesman";
-
+require('dotenv').config({path:__dirname+'/.env'});
+const mongooseURI = process.env.MONGO_DB_STRING;
+console.log(mongooseURI)
 const connectToMongo = ()=>{
     mongoose.connect(mongooseURI,()=>{
         console.log("Connected to mongo");
